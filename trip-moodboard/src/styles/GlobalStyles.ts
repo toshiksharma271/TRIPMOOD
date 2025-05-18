@@ -4,7 +4,7 @@ export const GlobalStyles = createGlobalStyle`
  :root {
   --bg-primary: #A9D6E5;       /* soft sky blue */
   --bg-secondary:rgb(151, 196, 231);     /* vibrant light blue */
-  --bg-tertiary:rgb(183, 215, 241);      /* deeper light blue */
+  --bg-tertiary:rgb(198, 232, 245);      /* deeper light blue */
   --text-primary: #1C3F52;     /* dark slate blue */
   --text-secondary: #52796F;   /* muted teal */
   --border-color: rgba(76, 175, 240, 0.3); /* soft blue border */

@@ -5,26 +5,20 @@ import { useMoodboard } from '../context/MoodboardContext';
 import { Sticker } from './stickersData';
 
 const float = keyframes`
-  0% {
-    transform: translateY(0px) rotate(0deg) scale(1);
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(70px) rotate(30deg) scale(1.1);
-  }
-  100% {
-    transform: translateY(0px) rotate(-30deg) scale(1);
+    transform: translateY(60px) rotate(50deg);
   }
 `;
 
 const pulse = keyframes`
-  0% {
+  0%, 100% {
     opacity: 0.5;
   }
   50% {
     opacity: 1;
-  }
-  100% {
-    opacity: 0.5;
   }
 `;
 
@@ -45,7 +39,7 @@ const CanvasArea = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
   width: 100%;
   height: 100%;
 `;
@@ -65,55 +59,55 @@ const BackgroundBox = styled.div<{
   left: ${({ x }) => x}%;
   top: ${({ y }) => y}%;
   animation: 
-    ${float} ${({ delay }) => 20 + 2 * delay}s ease-in-out infinite,
-    ${pulse} ${({ delay }) => 20 + 2 * delay}s ease-in-out infinite;
+    ${float} 14s cubic-bezier(0.45, 0, 0.55, 1) infinite,
+    ${pulse} 10s ease-in-out infinite;
   animation-delay: ${({ delay }) => delay}s;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transform-style: preserve-3d;
-  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
   will-change: transform;
 
-  &:hover {
-    transform: scale(1.15) rotate(10deg);
-    box-shadow: 0 10px 32px rgb(115, 151, 190);
-    cursor: pointer;
-  }
+ &:hover {
+  animation-play-state: paused;
+  transform: scale(1.1) rotate(25deg);
+  box-shadow: 0 8px 32px rgba(115, 151, 190, 0.6);
+  cursor: pointer;
+}
+  
 
   &:active {
-    transform: scale(0.95) rotate(-25deg);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95) rotate(-15deg);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
   }
 `;
 
 const StickerWrapper = styled.div<{ isHighlighted: boolean }>`
   position: absolute;
-  cursor: move;
+  cursor: grab;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
   opacity: ${({ isHighlighted }) => (isHighlighted ? 1 : 0.7)};
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
   width: 100px;
   height: 100px;
   background: var(--sticker-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 12px var(--shadow-color);
+  box-shadow: 0 4px 14px var(--shadow-color);
   padding: 12px;
-  transform-origin: center center;
-  backdrop-filter: blur(8px);
+  transform-origin: center;
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 16px var(--shadow-color);
+    box-shadow: 0 6px 18px var(--shadow-color);
   }
 
   img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 2px 4px var(--shadow-color));
+    filter: drop-shadow(0 2px 6px var(--shadow-color));
     transition: opacity 0.3s ease;
   }
 `;
@@ -129,7 +123,7 @@ const TimeLabel = styled.div`
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  box-shadow: 0 2px 6px var(--shadow-color);
   font-weight: 500;
   backdrop-filter: blur(4px);
 `;
@@ -157,18 +151,16 @@ const Canvas: React.FC = () => {
     Array<{ size: number; delay: number; x: number; y: number }>
   >([]);
 
-  // Initialize background boxes once
   useEffect(() => {
     const boxes = Array.from({ length: 15 }, () => ({
-      size: Math.random() * 100 + 50,
-      delay: Math.random() * 3,
-      x: Math.random() * 90 + 5,
-      y: Math.random() * 90 + 5,
+      size: Math.random() * 80 + 60,
+      delay: Math.random() * 5,
+      x: Math.random() * 90,
+      y: Math.random() * 90,
     }));
     setBackgroundBoxes(boxes);
   }, []);
 
-  // Set loading true for newly added stickers only, keep others as is
   useEffect(() => {
     setLoadingImages((prev) => {
       const newLoading = { ...prev };
@@ -230,7 +222,7 @@ const Canvas: React.FC = () => {
     stickerId: string
   ) => {
     const target = e.target as HTMLImageElement;
-    target.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2753.png'; // fallback
+    target.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2753.png';
     setLoadingImages((prev) => ({ ...prev, [stickerId]: false }));
   };
 

@@ -14,6 +14,7 @@ const SidebarContainer = styled.div`
 `;
 
 const ScrollableContent = styled.div`
+scrollbar-width: none;
   flex: 1;
   overflow-y: auto;
   padding-bottom: 16px;
