@@ -2,12 +2,13 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Draggable from 'react-draggable';
 import { useMoodboard } from '../context/MoodboardContext';
-import { Sticker } from '../utils/stickersData';
+import { Sticker } from './stickersData';
 
 const CanvasContainer = styled.div`
   flex: 1;
   position: relative;
-  background: #f5f5f5;
+  // blue background for better visibility light blue
+  background: linear-gradient(135deg,rgb(13, 202, 227) 0%,rgb(0, 184, 208) 100%);
   overflow: hidden;
 `;
 
@@ -31,7 +32,7 @@ const StickerWrapper = styled.div<{ isHighlighted: boolean }>`
 const TimeLabel = styled.div`
   font-size: 0.8rem;
   color: #666;
-  background: rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg,rgb(11, 199, 224) 0%,rgb(1, 216, 245) 100%);
   padding: 2px 6px;
   border-radius: 4px;
 `;

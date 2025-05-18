@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import html2canvas from 'html2canvas';
+import { useMoodboard } from '../context/MoodboardContext';
 
 const FooterContainer = styled.footer`
   display: flex;
@@ -9,12 +10,6 @@ const FooterContainer = styled.footer`
   gap: 1rem;
   padding: 0 24px;
   height: 100%;
-`;
-
-const FooterText = styled.p`
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin: 0;
 `;
 
 const Button = styled.button`
@@ -55,12 +50,20 @@ const ExportButton = styled(Button)`
 `;
 
 const Footer: React.FC = () => {
+  const { dispatch, state } = useMoodboard();
+
   const handleExport = async () => {
-    const canvas = document.querySelector('.canvas-area');
-    if (!canvas) return;
+    const canvas = document.querySelector('.canvas-area'); // ✅ make sure canvas container has this class
+    if (!canvas) {
+      console.error('No element with class `.canvas-area` found.');
+      return;
+    }
 
     try {
-      const screenshot = await html2canvas(canvas as HTMLElement);
+      const screenshot = await html2canvas(canvas as HTMLElement, {
+        useCORS: true,
+        logging: true,
+      });
       const link = document.createElement('a');
       link.download = 'moodboard.png';
       link.href = screenshot.toDataURL();
@@ -72,11 +75,14 @@ const Footer: React.FC = () => {
 
   return (
     <FooterContainer>
-      <Button disabled>
+      <Button onClick={() => dispatch({ type: 'UNDO' })} disabled={state.historyIndex === 0}>
         <span>↩️</span>
         Undo
       </Button>
-      <Button disabled>
+      <Button
+        onClick={() => dispatch({ type: 'REDO' })}
+        disabled={state.historyIndex === state.history.length - 1}
+      >
         <span>↪️</span>
         Redo
       </Button>

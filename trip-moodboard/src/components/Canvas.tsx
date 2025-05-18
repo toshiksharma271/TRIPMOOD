@@ -2,18 +2,30 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Draggable from 'react-draggable';
 import { useMoodboard } from '../context/MoodboardContext';
-import { Sticker } from '../utils/stickersData';
+import { Sticker } from './stickersData';
 
 const float = keyframes`
-  0% { transform: translateY(0px) rotate(0deg) scale(1); }
-  50% { transform: translateY(-20px) rotate(5deg) scale(1.05); }
-  100% { transform: translateY(0px) rotate(0deg) scale(1); }
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(70px) rotate(30deg) scale(1.1);
+  }
+  100% {
+    transform: translateY(0px) rotate(-30deg) scale(1);
+  }
 `;
 
 const pulse = keyframes`
-  0% { opacity: 0.5; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.5; }
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
 `;
 
 const CanvasContainer = styled.div`
@@ -22,7 +34,6 @@ const CanvasContainer = styled.div`
   background-color: var(--bg-primary);
   overflow: hidden;
   border-radius: 8px;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -39,28 +50,39 @@ const CanvasArea = styled.div`
   height: 100%;
 `;
 
-const BackgroundBox = styled.div<{ size: number; delay: number; x: number; y: number }>`
+const BackgroundBox = styled.div<{
+  size: number;
+  delay: number;
+  x: number;
+  y: number;
+}>`
   position: absolute;
-  width: ${props => props.size}px;
-  height: ${props => props.size}px;
-  background: var(--box-bg);
+  width: ${({ size }) => size}px;
+  height: ${({ size }) => size}px;
+  background: radial-gradient(circle, var(--box-bg) 0%, var(--box-border) 100%);
   border: 2px solid var(--box-border);
-  border-radius: 8px;
-  left: ${props => props.x}%;
-  top: ${props => props.y}%;
+  border-radius: 12px;
+  left: ${({ x }) => x}%;
+  top: ${({ y }) => y}%;
   animation: 
-    ${float} ${props => 3 + props.delay}s ease-in-out infinite,
-    ${pulse} ${props => 4 + props.delay}s ease-in-out infinite;
-  animation-delay: ${props => props.delay}s;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px var(--shadow-color);
+    ${float} ${({ delay }) => 20 + 2 * delay}s ease-in-out infinite,
+    ${pulse} ${({ delay }) => 20 + 2 * delay}s ease-in-out infinite;
+  animation-delay: ${({ delay }) => delay}s;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transform-style: preserve-3d;
-  perspective: 1000px;
   transition: all 0.3s ease;
+  will-change: transform;
 
   &:hover {
-    transform: scale(1.1) rotate(10deg);
-    box-shadow: 0 8px 24px var(--shadow-color);
+    transform: scale(1.15) rotate(10deg);
+    box-shadow: 0 10px 32px rgb(115, 151, 190);
+    cursor: pointer;
+  }
+
+  &:active {
+    transform: scale(0.95) rotate(-25deg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -71,7 +93,7 @@ const StickerWrapper = styled.div<{ isHighlighted: boolean }>`
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  opacity: ${props => props.isHighlighted ? 1 : 0.7};
+  opacity: ${({ isHighlighted }) => (isHighlighted ? 1 : 0.7)};
   transition: all 0.3s ease;
   width: 100px;
   height: 100px;
@@ -92,6 +114,7 @@ const StickerWrapper = styled.div<{ isHighlighted: boolean }>`
     height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 2px 4px var(--shadow-color));
+    transition: opacity 0.3s ease;
   }
 `;
 
@@ -112,8 +135,8 @@ const TimeLabel = styled.div`
 `;
 
 const LoadingSpinner = styled.div`
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   border: 4px solid #f3f3f3;
   border-top: 4px solid #3498db;
   border-radius: 50%;
@@ -130,18 +153,33 @@ const Canvas: React.FC = () => {
   const { state, dispatch } = useMoodboard();
   const canvasRef = useRef<HTMLDivElement>(null);
   const [loadingImages, setLoadingImages] = useState<{ [key: string]: boolean }>({});
-  const [backgroundBoxes, setBackgroundBoxes] = useState<Array<{ size: number; delay: number; x: number; y: number }>>([]);
+  const [backgroundBoxes, setBackgroundBoxes] = useState<
+    Array<{ size: number; delay: number; x: number; y: number }>
+  >([]);
 
+  // Initialize background boxes once
   useEffect(() => {
-    // Generate more background boxes with better distribution
-    const boxes = Array.from({ length: 30 }, () => ({
-      size: Math.random() * 100 + 50, // Larger size range
+    const boxes = Array.from({ length: 15 }, () => ({
+      size: Math.random() * 100 + 50,
       delay: Math.random() * 3,
-      x: Math.random() * 100,
-      y: Math.random() * 100
+      x: Math.random() * 90 + 5,
+      y: Math.random() * 90 + 5,
     }));
     setBackgroundBoxes(boxes);
   }, []);
+
+  // Set loading true for newly added stickers only, keep others as is
+  useEffect(() => {
+    setLoadingImages((prev) => {
+      const newLoading = { ...prev };
+      state.stickers.forEach((sticker) => {
+        if (!(sticker.id in newLoading)) {
+          newLoading[sticker.id] = true;
+        }
+      });
+      return newLoading;
+    });
+  }, [state.stickers]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -152,17 +190,17 @@ const Canvas: React.FC = () => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    const x = e.clientX - rect.left - 50; // Center the sticker
-    const y = e.clientY - rect.top - 50;  // Center the sticker
+    const x = e.clientX - rect.left - 50;
+    const y = e.clientY - rect.top - 50;
 
     const newSticker = {
       ...sticker,
       id: `${sticker.id}-${Date.now()}`,
       position: { x, y },
-      size: 100, // Slightly smaller size
+      size: 100,
       rotation: 0,
       time: state.selectedTime,
-      zIndex: state.stickers.length
+      zIndex: state.stickers.length,
     };
 
     dispatch({ type: 'ADD_STICKER', payload: newSticker });
@@ -172,31 +210,35 @@ const Canvas: React.FC = () => {
     e.preventDefault();
   };
 
-  const handleDrag = (e: any, stickerId: string) => {
-    const { x, y } = e;
+  const handleDrag = (data: any, stickerId: string) => {
+    const { x, y } = data;
     dispatch({
       type: 'UPDATE_STICKER',
       payload: {
         id: stickerId,
-        updates: { position: { x, y } }
-      }
+        updates: { position: { x, y } },
+      },
     });
   };
 
   const handleImageLoad = (stickerId: string) => {
-    setLoadingImages(prev => ({ ...prev, [stickerId]: false }));
+    setLoadingImages((prev) => ({ ...prev, [stickerId]: false }));
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, stickerId: string) => {
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>,
+    stickerId: string
+  ) => {
     const target = e.target as HTMLImageElement;
-    target.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2753.png';
-    setLoadingImages(prev => ({ ...prev, [stickerId]: false }));
+    target.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2753.png'; // fallback
+    setLoadingImages((prev) => ({ ...prev, [stickerId]: false }));
   };
 
   return (
     <CanvasContainer>
       <CanvasArea
         ref={canvasRef}
+        className="canvas-area"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
@@ -209,9 +251,10 @@ const Canvas: React.FC = () => {
             y={box.y}
           />
         ))}
+
         {state.stickers
-          .filter(sticker => sticker.time === state.selectedTime)
-          .map(sticker => (
+          .filter((sticker) => sticker.time === state.selectedTime)
+          .map((sticker) => (
             <Draggable
               key={sticker.id}
               position={sticker.position}
@@ -222,12 +265,12 @@ const Canvas: React.FC = () => {
                 isHighlighted={sticker.time === state.selectedTime}
                 style={{
                   transform: `rotate(${sticker.rotation}deg)`,
-                  zIndex: sticker.zIndex
+                  zIndex: sticker.zIndex,
                 }}
               >
                 {loadingImages[sticker.id] && <LoadingSpinner />}
-                <img 
-                  src={sticker.image} 
+                <img
+                  src={sticker.image}
                   alt={sticker.name}
                   onLoad={() => handleImageLoad(sticker.id)}
                   onError={(e) => handleImageError(e, sticker.id)}
@@ -242,4 +285,4 @@ const Canvas: React.FC = () => {
   );
 };
 
-export default Canvas; 
+export default Canvas;

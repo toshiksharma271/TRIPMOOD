@@ -65,7 +65,7 @@ const StickerCount = styled.span`
 
 const Timeline: React.FC = () => {
   const { state, dispatch } = useMoodboard();
-  const times = ['00:00','01:00', '03:00', '06:00', '09:00', '12:00','06:00', '09:00', '12:00', '15:00', '18:00', '21:00'];
+  const times = ['00:00','01:00', '02:00', '03:00', '04:00', '5:00','06:00', '07:00', '8:00', '9:00', '10:00', '11:00','12:00'];
 
   const handleTimeClick = (time: string) => {
     dispatch({ type: 'SET_TIME', payload: time });

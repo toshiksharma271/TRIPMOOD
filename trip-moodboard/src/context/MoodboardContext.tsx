@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { Sticker } from '../utils/stickersData';
+import { Sticker } from '../components/stickersData';
 
 interface PlacedSticker extends Sticker {
   id: string;

@@ -1,32 +1,31 @@
 import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
-  :root {
-    /* Light theme variables */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f5f7fa;
-    --bg-tertiary: #e4e8eb;
-    --text-primary: #333333;
-    --text-secondary: #666666;
-    --border-color: rgba(0, 0, 0, 0.1);
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --sticker-bg: rgba(255, 255, 255, 0.95);
-    --box-bg: rgba(255, 255, 255, 0.1);
-    --box-border: rgba(255, 255, 255, 0.2);
-  }
+ :root {
+  --bg-primary: #A9D6E5;       /* soft sky blue */
+  --bg-secondary:rgb(151, 196, 231);     /* vibrant light blue */
+  --bg-tertiary:rgb(183, 215, 241);      /* deeper light blue */
+  --text-primary: #1C3F52;     /* dark slate blue */
+  --text-secondary: #52796F;   /* muted teal */
+  --border-color: rgba(76, 175, 240, 0.3); /* soft blue border */
+  --shadow-color: rgba(0, 123, 255, 0.2);  /* soft blue shadow */
+  --sticker-bg: rgba(164, 214, 255, 0.85); /* pale blue */
+  --box-bg: rgba(126, 204, 235, 0.36);      /* translucent white */
+  --box-border: rgba(78, 147, 203, 0.3);  /* light blue border */
+}
 
   [data-theme='dark'] {
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #2d2d2d;
-    --bg-tertiary: #3d3d3d;
-    --text-primary: #ffffff;
-    --text-secondary: #b3b3b3;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --shadow-color: rgba(0, 0, 0, 0.3);
-    --sticker-bg: rgba(45, 45, 45, 0.95);
-    --box-bg: rgba(255, 255, 255, 0.05);
-    --box-border: rgba(255, 255, 255, 0.1);
-  }
+  --bg-primary: #121627;       /* almost black with blue tint */
+  --bg-secondary: #1F2937;     /* dark slate blue */
+  --bg-tertiary: #374151;      /* cool dark gray-blue */
+  --text-primary: #E0E0E0;     /* soft light gray */
+  --text-secondary: #9CA3AF;   /* muted silver */
+  --border-color: rgba(147, 197, 253, 0.3); /* soft sky blue */
+  --shadow-color: rgba(56, 189, 248, 0.3);  /* subtle blue glow */
+  --sticker-bg: rgba(31, 41, 55, 0.85);     /* dark translucent */
+  --box-bg: rgba(31, 41, 55, 0.9);          /* dark translucent */
+  --box-border: rgba(147, 197, 253, 0.5);   /* gentle sky blue */
+}
 
   * {
     margin: 0;
